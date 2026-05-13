@@ -1,5 +1,6 @@
 import axios from 'axios';
-import type { UsersResponse, User, CreateUserPayload } from '../model/types';
+import type { UsersResponse, User } from '../model/types';
+import type { UserFormValues } from '../model/schema';
 
 const API_URL = 'https://dummyjson.com/users';
 
@@ -40,7 +41,7 @@ export async function fetchUserById(id: number): Promise<User> {
   return data;
 }
 
-export async function createUser(payload: CreateUserPayload): Promise<User> {
+export async function createUser(payload: UserFormValues): Promise<User> {
   const { data } = await axios.post<User>(`${API_URL}/add`, {
     firstName: payload.firstName,
     lastName: payload.lastName,
@@ -57,7 +58,7 @@ export async function createUser(payload: CreateUserPayload): Promise<User> {
   return data;
 }
 
-export async function updateUser(id: number, payload: CreateUserPayload): Promise<User> {
+export async function updateUser(id: number, payload: UserFormValues): Promise<User> {
   const { data } = await axios.put<User>(`${API_URL}/${id}`, {
     firstName: payload.firstName,
     lastName: payload.lastName,

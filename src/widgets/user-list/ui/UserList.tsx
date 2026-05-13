@@ -1,4 +1,4 @@
-import type { User } from '@/entities/user/model/types';
+import type { User } from '@/entities';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 interface Props {

@@ -1,48 +1,151 @@
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Users, ShieldCheck, UserCheck, User } from 'lucide-react';
-import { fetchUsers } from '@/entities/user/api/usersApi';
-import type { User as UserType } from '@/entities/user/model/types';
-import { UserList } from '@/widgets/user-list/ui/UserList';
-import { UserDetailModal } from '@/widgets/user-detail-modal/ui/UserDetailModal';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import {
+  Search,
+  Users,
+  ShieldCheck,
+  UserCheck,
+  User,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
+import { fetchUsers, createUser, updateUser, deleteUser } from '@/entities';
+import type { User as UserType } from '@/entities';
+import type { UserFormValues } from '@/entities';
+import { useDebounce } from '@/shared';
+import { UserList } from '@/widgets';
+import { UserDetailModal } from '@/widgets';
+import { UserFormModal } from '@/features';
+import { UserDeleteConfirm } from '@/features';
+
+type SortField = 'firstName' | 'lastName' | 'age' | 'email' | 'role';
 
 export const DashboardPage = () => {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 400);
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'moderator' | 'user'>('all');
+  const [sortBy, setSortBy] = useState<SortField>('firstName');
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [limit, setLimit] = useState(10);
+  const [skip, setSkip] = useState(0);
+
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [formUser, setFormUser] = useState<UserType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserType | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryKey: ['users', { limit, skip, search: debouncedSearch, role: roleFilter, sortBy, order }],
+    queryFn: () =>
+      fetchUsers({
+        limit,
+        skip,
+        search: debouncedSearch,
+        role: roleFilter,
+        sortBy,
+        order,
+      }),
   });
 
   const users = data?.users ?? [];
+  const total = data?.total ?? 0;
+  const page = Math.floor(skip / limit) + 1;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      const matchesSearch =
-        `${u.firstName} ${u.lastName} ${u.email} ${u.username}`
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      const matchesRole = roleFilter === 'all' || u.role === roleFilter;
-      return matchesSearch && matchesRole;
-    });
-  }, [users, search, roleFilter]);
+  const createMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      toast.success('Пользователь создан (симуляция)');
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setFormUser(null);
+    },
+    onError: () => {
+      toast.error('Не удалось создать пользователя');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UserFormValues }) => updateUser(id, payload),
+    onSuccess: () => {
+      toast.success('Пользователь обновлён (симуляция)');
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setFormUser(null);
+    },
+    onError: () => {
+      toast.error('Не удалось обновить пользователя');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      toast.success('Пользователь удалён (симуляция)');
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setDeleteTarget(null);
+    },
+    onError: () => {
+      toast.error('Не удалось удалить пользователя');
+    },
+  });
 
   const stats = useMemo(() => {
     return {
-      total: users.length,
+      total,
       admin: users.filter((u) => u.role === 'admin').length,
       moderator: users.filter((u) => u.role === 'moderator').length,
       user: users.filter((u) => u.role === 'user').length,
     };
-  }, [users]);
+  }, [users, total]);
+
+  const handleSort = (field: SortField) => {
+    if (sortBy === field) {
+      setOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setOrder('asc');
+    }
+    setSkip(0);
+  };
+
+  const handleSubmitForm = (values: UserFormValues) => {
+    if (formUser) {
+      updateMutation.mutate({ id: formUser.id, payload: values });
+    } else {
+      createMutation.mutate(values);
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget.id);
+    }
+  };
+
+  const goToPage = (p: number) => {
+    setSkip((p - 1) * limit);
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold tracking-tight">Пользователи</h2>
-        <p className="text-muted-foreground mt-1">Управление и просмотр пользователей системы</p>
+      <div className="mb-8 flex items-end justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Пользователи</h2>
+          <p className="text-muted-foreground mt-1">Управление и просмотр пользователей системы</p>
+        </div>
+        <button
+          onClick={() => setFormUser(null)}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Добавить
+        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -59,15 +162,21 @@ export const DashboardPage = () => {
             type="text"
             placeholder="Поиск по имени, email или username..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setSkip(0);
+            }}
             className="w-full rounded-lg border bg-background py-2 pl-9 pr-4 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(['all', 'admin', 'moderator', 'user'] as const).map((role) => (
             <button
               key={role}
-              onClick={() => setRoleFilter(role)}
+              onClick={() => {
+                setRoleFilter(role);
+                setSkip(0);
+              }}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 roleFilter === role
                   ? 'bg-primary text-primary-foreground'
@@ -78,6 +187,38 @@ export const DashboardPage = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <span>Сортировка:</span>
+        {(
+          [
+            { field: 'firstName' as SortField, label: 'Имя' },
+            { field: 'lastName' as SortField, label: 'Фамилия' },
+            { field: 'age' as SortField, label: 'Возраст' },
+            { field: 'email' as SortField, label: 'Email' },
+            { field: 'role' as SortField, label: 'Роль' },
+          ] as const
+        ).map(({ field, label }) => (
+          <button
+            key={field}
+            onClick={() => handleSort(field)}
+            className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+              sortBy === field ? 'bg-primary text-primary-foreground border-primary' : 'bg-card hover:bg-muted'
+            }`}
+          >
+            {label}
+            {sortBy === field ? (
+              order === 'asc' ? (
+                <ArrowUp className="h-3 w-3" />
+              ) : (
+                <ArrowDown className="h-3 w-3" />
+              )
+            ) : (
+              <ArrowUpDown className="h-3 w-3 opacity-50" />
+            )}
+          </button>
+        ))}
       </div>
 
       {isLoading && (
@@ -92,9 +233,91 @@ export const DashboardPage = () => {
         </div>
       )}
 
-      {!isLoading && !isError && <UserList users={filteredUsers} onSelect={setSelectedUser} />}
+      {!isLoading && !isError && (
+        <>
+          <UserList
+            users={users}
+            onSelect={setSelectedUser}
+            onEdit={setFormUser}
+            onDelete={setDeleteTarget}
+          />
+
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Показать:</span>
+              {[5, 10, 20, 30].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => {
+                    setLimit(n);
+                    setSkip(0);
+                  }}
+                  className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                    limit === n ? 'bg-primary text-primary-foreground' : 'border bg-card hover:bg-muted'
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <span className="ml-2">
+                {total > 0 ? `${skip + 1}–${Math.min(skip + limit, total)} из ${total}` : '0'}
+              </span>
+            </div>
+
+            <div className="inline-flex items-center gap-1">
+              <button
+                onClick={() => goToPage(1)}
+                disabled={page <= 1}
+                className="rounded-md border p-1.5 hover:bg-muted disabled:opacity-40"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1}
+                className="rounded-md border p-1.5 hover:bg-muted disabled:opacity-40"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="px-3 text-sm">
+                Стр. {page} / {totalPages}
+              </span>
+              <button
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages}
+                className="rounded-md border p-1.5 hover:bg-muted disabled:opacity-40"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => goToPage(totalPages)}
+                disabled={page >= totalPages}
+                className="rounded-md border p-1.5 hover:bg-muted disabled:opacity-40"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       <UserDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+
+      {(formUser !== undefined) && (
+        <UserFormModal
+          user={formUser}
+          onClose={() => setFormUser(undefined as unknown as null)}
+          onSubmit={handleSubmitForm}
+          isSubmitting={createMutation.isPending || updateMutation.isPending}
+        />
+      )}
+
+      <UserDeleteConfirm
+        user={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+        isSubmitting={deleteMutation.isPending}
+      />
     </div>
   );
 };

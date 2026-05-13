@@ -1,4 +1,4 @@
-import type { User } from '@/entities/user/model/types';
+import type { User } from '@/entities';
 import { X, Mail, Phone, MapPin, Briefcase, GraduationCap, Calendar, Ruler, Weight, Droplet } from 'lucide-react';
 
 interface Props {

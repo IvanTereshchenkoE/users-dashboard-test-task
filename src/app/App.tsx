@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { ROUTES } from '@/shared/config';
-import { DashboardPage } from '@/pages/dashboard/ui/DashboardPage';
+import { ROUTES } from '@/shared';
+import { DashboardPage } from '@/pages';
 
 export const App = () => {
   return (

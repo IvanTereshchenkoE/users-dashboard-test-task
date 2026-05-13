@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
-import type { User } from '@/entities/user/model/types';
-import { userFormSchema, type UserFormValues } from '@/entities/user/model/schema';
+import type { User } from '@/entities';
+import { userFormSchema, type UserFormValues } from '@/entities';
 
 interface Props {
   user: User | null;

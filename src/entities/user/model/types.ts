@@ -41,20 +41,3 @@ export interface UsersResponse {
   skip: number;
   limit: number;
 }
-
-export interface CreateUserPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  age: number;
-  gender: string;
-  username: string;
-  birthDate: string;
-  role: 'admin' | 'moderator' | 'user';
-  companyName: string;
-  companyTitle: string;
-  city: string;
-}
-
-export interface UpdateUserPayload extends CreateUserPayload {}
