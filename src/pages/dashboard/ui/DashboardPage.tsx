@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -20,14 +21,13 @@ import { fetchUsers, createUser, updateUser, deleteUser } from '@/entities';
 import type { User as UserType } from '@/entities';
 import type { UserFormValues } from '@/entities';
 import { useDebounce } from '@/shared';
-import { UserList } from '@/widgets';
-import { UserDetailModal } from '@/widgets';
-import { UserFormModal } from '@/features';
-import { UserDeleteConfirm } from '@/features';
+import { UserList, UserDetailModal } from '@/widgets';
+import { UserFormModal, UserDeleteConfirm } from '@/features';
 
 type SortField = 'firstName' | 'lastName' | 'age' | 'email' | 'role';
 
 export const DashboardPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
@@ -38,6 +38,7 @@ export const DashboardPage = () => {
   const [skip, setSkip] = useState(0);
 
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [formUser, setFormUser] = useState<UserType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserType | null>(null);
 
@@ -62,36 +63,36 @@ export const DashboardPage = () => {
   const createMutation = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      toast.success('Пользователь создан (симуляция)');
+      toast.success(t('toasts.userCreated'));
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      setFormUser(null);
+      setIsFormOpen(false);
     },
     onError: () => {
-      toast.error('Не удалось создать пользователя');
+      toast.error(t('toasts.createError'));
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: UserFormValues }) => updateUser(id, payload),
     onSuccess: () => {
-      toast.success('Пользователь обновлён (симуляция)');
+      toast.success(t('toasts.userUpdated'));
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      setFormUser(null);
+      setIsFormOpen(false);
     },
     onError: () => {
-      toast.error('Не удалось обновить пользователя');
+      toast.error(t('toasts.updateError'));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      toast.success('Пользователь удалён (симуляция)');
+      toast.success(t('toasts.userDeleted'));
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setDeleteTarget(null);
     },
     onError: () => {
-      toast.error('Не удалось удалить пользователя');
+      toast.error(t('toasts.deleteError'));
     },
   });
 
@@ -136,23 +137,26 @@ export const DashboardPage = () => {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8 flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Пользователи</h2>
-          <p className="text-muted-foreground mt-1">Управление и просмотр пользователей системы</p>
+          <h2 className="text-2xl font-bold tracking-tight">{t('dashboard.title')}</h2>
+          <p className="text-muted-foreground mt-1">{t('dashboard.subtitle')}</p>
         </div>
         <button
-          onClick={() => setFormUser(null)}
+          onClick={() => {
+            setFormUser(null);
+            setIsFormOpen(true);
+          }}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Добавить
+          {t('header.addUser')}
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard title="Всего" value={stats.total} icon={<Users className="h-5 w-5 text-primary" />} />
-        <StatCard title="Администраторы" value={stats.admin} icon={<ShieldCheck className="h-5 w-5 text-red-500" />} />
-        <StatCard title="Модераторы" value={stats.moderator} icon={<UserCheck className="h-5 w-5 text-amber-500" />} />
-        <StatCard title="Пользователи" value={stats.user} icon={<User className="h-5 w-5 text-emerald-500" />} />
+        <StatCard title={t('dashboard.stats.total')} value={stats.total} icon={<Users className="h-5 w-5 text-primary" />} />
+        <StatCard title={t('dashboard.stats.admins')} value={stats.admin} icon={<ShieldCheck className="h-5 w-5 text-red-500" />} />
+        <StatCard title={t('dashboard.stats.moderators')} value={stats.moderator} icon={<UserCheck className="h-5 w-5 text-amber-500" />} />
+        <StatCard title={t('dashboard.stats.users')} value={stats.user} icon={<User className="h-5 w-5 text-emerald-500" />} />
       </div>
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -160,7 +164,7 @@ export const DashboardPage = () => {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Поиск по имени, email или username..."
+            placeholder={t('dashboard.searchPlaceholder')}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -183,21 +187,27 @@ export const DashboardPage = () => {
                   : 'border bg-card hover:bg-muted'
               }`}
             >
-              {role === 'all' ? 'Все' : role === 'admin' ? 'Админы' : role === 'moderator' ? 'Модераторы' : 'Юзеры'}
+              {role === 'all'
+                ? t('dashboard.filters.all')
+                : role === 'admin'
+                ? t('dashboard.filters.admins')
+                : role === 'moderator'
+                ? t('dashboard.filters.moderators')
+                : t('dashboard.filters.users')}
             </button>
           ))}
         </div>
       </div>
 
       <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-        <span>Сортировка:</span>
+        <span>{t('dashboard.sort.label')}</span>
         {(
           [
-            { field: 'firstName' as SortField, label: 'Имя' },
-            { field: 'lastName' as SortField, label: 'Фамилия' },
-            { field: 'age' as SortField, label: 'Возраст' },
-            { field: 'email' as SortField, label: 'Email' },
-            { field: 'role' as SortField, label: 'Роль' },
+            { field: 'firstName' as SortField, label: t('dashboard.sort.firstName') },
+            { field: 'lastName' as SortField, label: t('dashboard.sort.lastName') },
+            { field: 'age' as SortField, label: t('dashboard.sort.age') },
+            { field: 'email' as SortField, label: t('dashboard.sort.email') },
+            { field: 'role' as SortField, label: t('dashboard.sort.role') },
           ] as const
         ).map(({ field, label }) => (
           <button
@@ -223,13 +233,13 @@ export const DashboardPage = () => {
 
       {isLoading && (
         <div className="flex items-center justify-center py-24 text-muted-foreground">
-          Загрузка пользователей...
+          {t('dashboard.loading')}
         </div>
       )}
 
       {isError && (
         <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-6 text-center text-destructive">
-          Не удалось загрузить пользователей. Попробуйте позже.
+          {t('dashboard.error')}
         </div>
       )}
 
@@ -238,13 +248,16 @@ export const DashboardPage = () => {
           <UserList
             users={users}
             onSelect={setSelectedUser}
-            onEdit={setFormUser}
+            onEdit={(user) => {
+              setFormUser(user);
+              setIsFormOpen(true);
+            }}
             onDelete={setDeleteTarget}
           />
 
           <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Показать:</span>
+              <span>{t('dashboard.pagination.show')}:</span>
               {[5, 10, 20, 30].map((n) => (
                 <button
                   key={n}
@@ -260,7 +273,7 @@ export const DashboardPage = () => {
                 </button>
               ))}
               <span className="ml-2">
-                {total > 0 ? `${skip + 1}–${Math.min(skip + limit, total)} из ${total}` : '0'}
+                {total > 0 ? `${skip + 1}–${Math.min(skip + limit, total)} ${t('dashboard.pagination.of')} ${total}` : '0'}
               </span>
             </div>
 
@@ -280,7 +293,7 @@ export const DashboardPage = () => {
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <span className="px-3 text-sm">
-                Стр. {page} / {totalPages}
+                {t('dashboard.pagination.page')} {page} / {totalPages}
               </span>
               <button
                 onClick={() => goToPage(page + 1)}
@@ -303,10 +316,10 @@ export const DashboardPage = () => {
 
       <UserDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
 
-      {(formUser !== undefined) && (
+      {isFormOpen && (
         <UserFormModal
           user={formUser}
-          onClose={() => setFormUser(undefined as unknown as null)}
+          onClose={() => setIsFormOpen(false)}
           onSubmit={handleSubmitForm}
           isSubmitting={createMutation.isPending || updateMutation.isPending}
         />

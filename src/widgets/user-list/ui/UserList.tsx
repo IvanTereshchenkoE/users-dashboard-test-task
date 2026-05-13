@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { User } from '@/entities';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
@@ -15,10 +16,12 @@ const roleStyles: Record<string, string> = {
 };
 
 export const UserList = ({ users, onSelect, onEdit, onDelete }: Props) => {
+  const { t } = useTranslation();
+
   if (users.length === 0) {
     return (
       <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
-        Пользователи не найдены
+        {t('dashboard.table.notFound')}
       </div>
     );
   }
@@ -29,13 +32,13 @@ export const UserList = ({ users, onSelect, onEdit, onDelete }: Props) => {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Пользователь</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Email</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Возраст</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Город</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Компания</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Роль</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Действия</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.user')}</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.email')}</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.age')}</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.city')}</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.company')}</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('dashboard.table.role')}</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">{t('dashboard.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -74,21 +77,21 @@ export const UserList = ({ users, onSelect, onEdit, onDelete }: Props) => {
                     <button
                       onClick={() => onSelect(user)}
                       className="rounded-md border p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      title="Просмотр"
+                      title={t('dashboard.table.view')}
                     >
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => onEdit(user)}
                       className="rounded-md border p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      title="Редактировать"
+                      title={t('dashboard.table.edit')}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => onDelete(user)}
                       className="rounded-md border p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                      title="Удалить"
+                      title={t('dashboard.table.delete')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

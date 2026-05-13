@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import type { User } from '@/entities';
 import { userFormSchema, type UserFormValues } from '@/entities';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const UserFormModal = ({ user, onClose, onSubmit, isSubmitting }: Props) => {
+  const { t } = useTranslation();
   const isEdit = !!user;
 
   const {
@@ -70,53 +72,53 @@ export const UserFormModal = ({ user, onClose, onSubmit, isSubmitting }: Props) 
         </button>
 
         <h2 className="text-xl font-semibold mb-6">
-          {isEdit ? 'Редактирование пользователя' : 'Новый пользователь'}
+          {isEdit ? t('userForm.editTitle') : t('userForm.createTitle')}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
-          <Field label="Имя" error={errors.firstName?.message}>
-            <input {...register('firstName')} className="input" placeholder="Имя" />
+          <Field label={t('userForm.firstName')} error={errors.firstName?.message}>
+            <input {...register('firstName')} className="input" placeholder={t('userForm.firstName')} />
           </Field>
-          <Field label="Фамилия" error={errors.lastName?.message}>
-            <input {...register('lastName')} className="input" placeholder="Фамилия" />
+          <Field label={t('userForm.lastName')} error={errors.lastName?.message}>
+            <input {...register('lastName')} className="input" placeholder={t('userForm.lastName')} />
           </Field>
-          <Field label="Email" error={errors.email?.message}>
+          <Field label={t('userForm.email')} error={errors.email?.message}>
             <input {...register('email')} className="input" placeholder="email@example.com" />
           </Field>
-          <Field label="Телефон" error={errors.phone?.message}>
+          <Field label={t('userForm.phone')} error={errors.phone?.message}>
             <input {...register('phone')} className="input" placeholder="+7 999 999-99-99" />
           </Field>
-          <Field label="Возраст" error={errors.age?.message}>
+          <Field label={t('userForm.age')} error={errors.age?.message}>
             <input type="number" {...register('age')} className="input" />
           </Field>
-          <Field label="Пол" error={errors.gender?.message}>
+          <Field label={t('userForm.gender')} error={errors.gender?.message}>
             <select {...register('gender')} className="input">
-              <option value="male">Мужской</option>
-              <option value="female">Женский</option>
-              <option value="other">Другой</option>
+              <option value="male">{t('userForm.genderOptions.male')}</option>
+              <option value="female">{t('userForm.genderOptions.female')}</option>
+              <option value="other">{t('userForm.genderOptions.other')}</option>
             </select>
           </Field>
-          <Field label="Username" error={errors.username?.message}>
+          <Field label={t('userForm.username')} error={errors.username?.message}>
             <input {...register('username')} className="input" placeholder="username" />
           </Field>
-          <Field label="Дата рождения" error={errors.birthDate?.message}>
+          <Field label={t('userForm.birthDate')} error={errors.birthDate?.message}>
             <input type="date" {...register('birthDate')} className="input" />
           </Field>
-          <Field label="Роль" error={errors.role?.message}>
+          <Field label={t('userForm.role')} error={errors.role?.message}>
             <select {...register('role')} className="input">
-              <option value="user">Пользователь</option>
-              <option value="moderator">Модератор</option>
-              <option value="admin">Администратор</option>
+              <option value="user">{t('userForm.roleOptions.user')}</option>
+              <option value="moderator">{t('userForm.roleOptions.moderator')}</option>
+              <option value="admin">{t('userForm.roleOptions.admin')}</option>
             </select>
           </Field>
-          <Field label="Город" error={errors.city?.message}>
-            <input {...register('city')} className="input" placeholder="Город" />
+          <Field label={t('userForm.city')} error={errors.city?.message}>
+            <input {...register('city')} className="input" placeholder={t('userForm.city')} />
           </Field>
-          <Field label="Компания" error={errors.companyName?.message}>
-            <input {...register('companyName')} className="input" placeholder="Название компании" />
+          <Field label={t('userForm.companyName')} error={errors.companyName?.message}>
+            <input {...register('companyName')} className="input" placeholder={t('userForm.companyName')} />
           </Field>
-          <Field label="Должность" error={errors.companyTitle?.message}>
-            <input {...register('companyTitle')} className="input" placeholder="Должность" />
+          <Field label={t('userForm.companyTitle')} error={errors.companyTitle?.message}>
+            <input {...register('companyTitle')} className="input" placeholder={t('userForm.companyTitle')} />
           </Field>
 
           <div className="col-span-full mt-2 flex justify-end gap-3">
@@ -125,14 +127,14 @@ export const UserFormModal = ({ user, onClose, onSubmit, isSubmitting }: Props) 
               onClick={onClose}
               className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
             >
-              Отмена
+              {t('userForm.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
-              {isSubmitting ? 'Сохранение...' : isEdit ? 'Сохранить' : 'Создать'}
+              {isSubmitting ? t('userForm.submitLoading') : isEdit ? t('userForm.submitEdit') : t('userForm.submitCreate')}
             </button>
           </div>
         </form>

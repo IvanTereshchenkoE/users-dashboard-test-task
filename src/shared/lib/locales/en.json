@@ -1,0 +1,103 @@
+{
+  "header": {
+    "title": "Users Dashboard",
+    "addUser": "Add User"
+  },
+  "footer": {
+    "text": "Data provided by dummyjson.com"
+  },
+  "dashboard": {
+    "title": "Users",
+    "subtitle": "Manage and view system users",
+    "stats": {
+      "total": "Total",
+      "admins": "Administrators",
+      "moderators": "Moderators",
+      "users": "Users"
+    },
+    "searchPlaceholder": "Search by name, email or username...",
+    "filters": {
+      "all": "All",
+      "admins": "Admins",
+      "moderators": "Moderators",
+      "users": "Users"
+    },
+    "sort": {
+      "label": "Sort by:",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "age": "Age",
+      "email": "Email",
+      "role": "Role"
+    },
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "age": "Age",
+      "city": "City",
+      "company": "Company",
+      "role": "Role",
+      "actions": "Actions",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "notFound": "No users found"
+    },
+    "pagination": {
+      "show": "Show",
+      "page": "Page",
+      "of": "of"
+    },
+    "loading": "Loading users...",
+    "error": "Failed to load users. Please try again later."
+  },
+  "userDetail": {
+    "bloodGroup": "Blood group",
+    "close": "Close"
+  },
+  "userForm": {
+    "createTitle": "New User",
+    "editTitle": "Edit User",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "age": "Age",
+    "gender": "Gender",
+    "genderOptions": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "username": "Username",
+    "birthDate": "Birth Date",
+    "role": "Role",
+    "roleOptions": {
+      "user": "User",
+      "moderator": "Moderator",
+      "admin": "Administrator"
+    },
+    "city": "City",
+    "companyName": "Company",
+    "companyTitle": "Job Title",
+    "cancel": "Cancel",
+    "submitCreate": "Create",
+    "submitEdit": "Save",
+    "submitLoading": "Saving..."
+  },
+  "userDelete": {
+    "title": "Delete user?",
+    "description": "Are you sure you want to delete user {{name}}? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "confirmLoading": "Deleting..."
+  },
+  "toasts": {
+    "userCreated": "User created (simulation)",
+    "userUpdated": "User updated (simulation)",
+    "userDeleted": "User deleted (simulation)",
+    "createError": "Failed to create user",
+    "updateError": "Failed to update user",
+    "deleteError": "Failed to delete user"
+  }
+}

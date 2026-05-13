@@ -1,0 +1,103 @@
+{
+  "header": {
+    "title": "Дашборд пользователей",
+    "addUser": "Добавить"
+  },
+  "footer": {
+    "text": "Данные предоставлены dummyjson.com"
+  },
+  "dashboard": {
+    "title": "Пользователи",
+    "subtitle": "Управление и просмотр пользователей системы",
+    "stats": {
+      "total": "Всего",
+      "admins": "Администраторы",
+      "moderators": "Модераторы",
+      "users": "Пользователи"
+    },
+    "searchPlaceholder": "Поиск по имени, email или username...",
+    "filters": {
+      "all": "Все",
+      "admins": "Админы",
+      "moderators": "Модераторы",
+      "users": "Юзеры"
+    },
+    "sort": {
+      "label": "Сортировка:",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "age": "Возраст",
+      "email": "Email",
+      "role": "Роль"
+    },
+    "table": {
+      "user": "Пользователь",
+      "email": "Email",
+      "age": "Возраст",
+      "city": "Город",
+      "company": "Компания",
+      "role": "Роль",
+      "actions": "Действия",
+      "view": "Просмотр",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "notFound": "Пользователи не найдены"
+    },
+    "pagination": {
+      "show": "Показать",
+      "page": "Стр.",
+      "of": "из"
+    },
+    "loading": "Загрузка пользователей...",
+    "error": "Не удалось загрузить пользователей. Попробуйте позже."
+  },
+  "userDetail": {
+    "bloodGroup": "Группа крови",
+    "close": "Закрыть"
+  },
+  "userForm": {
+    "createTitle": "Новый пользователь",
+    "editTitle": "Редактирование пользователя",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Email",
+    "phone": "Телефон",
+    "age": "Возраст",
+    "gender": "Пол",
+    "genderOptions": {
+      "male": "Мужской",
+      "female": "Женский",
+      "other": "Другой"
+    },
+    "username": "Username",
+    "birthDate": "Дата рождения",
+    "role": "Роль",
+    "roleOptions": {
+      "user": "Пользователь",
+      "moderator": "Модератор",
+      "admin": "Администратор"
+    },
+    "city": "Город",
+    "companyName": "Компания",
+    "companyTitle": "Должность",
+    "cancel": "Отмена",
+    "submitCreate": "Создать",
+    "submitEdit": "Сохранить",
+    "submitLoading": "Сохранение..."
+  },
+  "userDelete": {
+    "title": "Удалить пользователя?",
+    "description": "Вы уверены, что хотите удалить пользователя {{name}}? Это действие нельзя отменить.",
+    "cancel": "Отмена",
+    "confirm": "Удалить",
+    "confirmLoading": "Удаление..."
+  },
+  "toasts": {
+    "userCreated": "Пользователь создан (симуляция)",
+    "userUpdated": "Пользователь обновлён (симуляция)",
+    "userDeleted": "Пользователь удалён (симуляция)",
+    "createError": "Не удалось создать пользователя",
+    "updateError": "Не удалось обновить пользователя",
+    "deleteError": "Не удалось удалить пользователя"
+  }
+}

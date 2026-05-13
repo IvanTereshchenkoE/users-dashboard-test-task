@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, X } from 'lucide-react';
 import type { User } from '@/entities';
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export const UserDeleteConfirm = ({ user, onClose, onConfirm, isSubmitting }: Props) => {
+  const { t } = useTranslation();
   if (!user) return null;
 
   return (
@@ -25,15 +27,11 @@ export const UserDeleteConfirm = ({ user, onClose, onConfirm, isSubmitting }: Pr
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
             <AlertTriangle className="h-5 w-5 text-destructive" />
           </div>
-          <h2 className="text-lg font-semibold">Удалить пользователя?</h2>
+          <h2 className="text-lg font-semibold">{t('userDelete.title')}</h2>
         </div>
 
         <p className="text-sm text-muted-foreground mb-6">
-          Вы уверены, что хотите удалить пользователя{' '}
-          <span className="font-medium text-foreground">
-            {user.firstName} {user.lastName}
-          </span>
-          ? Это действие нельзя отменить.
+          {t('userDelete.description', { name: `${user.firstName} ${user.lastName}` })}
         </p>
 
         <div className="flex justify-end gap-3">
@@ -41,14 +39,14 @@ export const UserDeleteConfirm = ({ user, onClose, onConfirm, isSubmitting }: Pr
             onClick={onClose}
             className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
           >
-            Отмена
+            {t('userDelete.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={isSubmitting}
             className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
           >
-            {isSubmitting ? 'Удаление...' : 'Удалить'}
+            {isSubmitting ? t('userDelete.confirmLoading') : t('userDelete.confirm')}
           </button>
         </div>
       </div>

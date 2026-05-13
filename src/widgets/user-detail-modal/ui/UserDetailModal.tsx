@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { User } from '@/entities';
 import { X, Mail, Phone, MapPin, Briefcase, GraduationCap, Calendar, Ruler, Weight, Droplet } from 'lucide-react';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export const UserDetailModal = ({ user, onClose }: Props) => {
+  const { t } = useTranslation();
   if (!user) return null;
 
   return (
@@ -15,6 +17,7 @@ export const UserDetailModal = ({ user, onClose }: Props) => {
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          title={t('userDetail.close')}
         >
           <X className="h-5 w-5" />
         </button>
@@ -51,7 +54,7 @@ export const UserDetailModal = ({ user, onClose }: Props) => {
           <div className="flex items-center gap-3">
             <Briefcase className="h-4 w-4 text-primary" />
             <span>
-              {user.company.title} в {user.company.name}
+              {user.company.title} {t('dashboard.table.at') ?? 'at'} {user.company.name}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -60,7 +63,7 @@ export const UserDetailModal = ({ user, onClose }: Props) => {
           </div>
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 text-primary" />
-            <span>{user.birthDate} ({user.age} лет)</span>
+            <span>{user.birthDate} ({user.age})</span>
           </div>
           <div className="flex items-center gap-3">
             <Ruler className="h-4 w-4 text-primary" />
@@ -72,7 +75,7 @@ export const UserDetailModal = ({ user, onClose }: Props) => {
           </div>
           <div className="flex items-center gap-3">
             <Droplet className="h-4 w-4 text-primary" />
-            <span>Группа крови: {user.bloodGroup}</span>
+            <span>{t('userDetail.bloodGroup')}: {user.bloodGroup}</span>
           </div>
         </div>
       </div>
