@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+
+# Vite
+.vite/
+*.local
+
+# Environment (secrets / local overrides)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint
+.eslintcache
+
+# Tests / coverage
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editors
+.idea/
+*.swp
+*.swo
+*~
+
+# Optional: раскомментируй, если не хочешь коммитить настройки редактора целиком
+# .vscode/
